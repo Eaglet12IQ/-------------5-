@@ -2,10 +2,38 @@ from flask import Flask, jsonify, request, send_from_directory
 import json
 import os
 from flask_cors import CORS
-
+from flasgger import Swagger
 
 app = Flask(__name__)
 CORS(app)
+
+app.config['SWAGGER'] = {
+    'openapi': '3.0.0',
+    'title': 'API для управления продуктами',
+    'uiversion': 3,
+    'specs_route': '/docs/',
+    'specs': [
+        {
+            'endpoint': 'apispec',
+            'route': '/apispec.json',
+            'rule_filter': lambda rule: True,
+            'model_filter': lambda tag: True,
+        }
+    ],
+    'static_url_path': '/flasgger_static',
+    'specs_route': '/docs/',
+    'specs': [
+        {
+            'endpoint': 'openapi',
+            'route': '/openapi.yaml',
+            'rule_filter': lambda rule: True,
+            'model_filter': lambda tag: True,
+        }
+    ],
+}
+
+Swagger(app, template_file='openapi.yaml')
+
 DB_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'database.json')
 
 def load_data():

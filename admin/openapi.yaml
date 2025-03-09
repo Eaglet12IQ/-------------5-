@@ -1,0 +1,135 @@
+openapi: 3.0.0
+info:
+  title: API для управления продуктами
+  description: API для добавления, получения, обновления и удаления продуктов.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Локальный сервер разработки
+paths:
+  /api/products:
+    get:
+      summary: Получить список всех продуктов
+      description: Возвращает список всех продуктов. Можно фильтровать по категории.
+      parameters:
+        - name: category
+          in: query
+          description: Категория для фильтрации продуктов
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Добавить новый продукт
+      description: Создает новый продукт и добавляет его в базу данных.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Продукт успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+  /api/products/{id}:
+    get:
+      summary: Получить продукт по ID
+      description: Возвращает продукт по его уникальному идентификатору.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Продукт не найден
+    put:
+      summary: Обновить продукт по ID
+      description: Обновляет информацию о продукте по его уникальному идентификатору.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Продукт успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Продукт не найден
+    delete:
+      summary: Удалить продукт по ID
+      description: Удаляет продукт по его уникальному идентификатору.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Продукт успешно удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Товар удален"
+        '404':
+          description: Продукт не найден
+components:
+  schemas:
+    Product:
+      type: object
+      required:
+        - name
+        - categories
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор продукта
+        name:
+          type: string
+          description: Название продукта
+        categories:
+          type: array
+          items:
+            type: string
+          description: Категории продукта
+        description:
+          type: string
+          description: Описание продукта
+        price:
+          type: number
+          description: Цена продукта
